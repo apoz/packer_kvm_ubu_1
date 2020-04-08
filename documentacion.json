@@ -24,7 +24,7 @@
             "keyboard-configuration/modelcode=SKIP ",
             "keyboard-configuration/layout=USA ",
             "keyboard-configuration/variant=USA console-setup/ask_detect=false ", variante de usa y desactuva deteccion automatica
-            "passwd/user-fullname={{ user `ssh_fullname` }} ", no crea un usuario root, crea un usuario normal que tiene acceso a sudo
+            "passwd/user-fullname={{ user `ssh_fullname` }} ", no crea un usuario root, crea un usuario normal que tiene acce
             "passwd/user-password={{ user `ssh_password` }} ",
             "passwd/user-password-again={{ user `ssh_password` }} ",
             "passwd/username={{ user `ssh_username` }} ",
