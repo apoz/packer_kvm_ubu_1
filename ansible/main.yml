@@ -1,10 +1,15 @@
 ---
-- hosts: all
+- name: Prepare ONE Ubuntu base image
+  hosts: "{{ lookup('env','HOSTS')  | default('all', true) }}"
   become: yes
   gather_facts: yes
-  
   tasks:
-    
+
+    - name: Copy sysadmin's RSA public key
+      authorized_key:
+        user: sysadmin
+        key: "{{ lookup('file', 'files/RSA/sysadmin_boe.pub') }}"
+
     - name: Install some helpful utilities.
       apt:
         name:
@@ -12,23 +17,47 @@
           - wget
           - curl
           - vim
+          - resolvconf
+          - ifupdown
         state: present
+        update_cache: yes
 
-    - name: Creates directory
-      file:
-        path: /etc/hello
-        state: directory    
+    - name: Uninstall cloud-init to prevent conflics with one-context and netplan
+      apt:
+        name:
+          - netplan
+          - netplan.io
+          - cloud-init
+        purge: true
+        state: absent
 
-    - name: descargar ONE contextualizacion
+    - name: Download one context package and install it
       get_url:
         url: https://github.com/OpenNebula/addon-context-linux/releases/download/v5.10.0/one-context_5.10.0-1.deb
-        dest: /etc/hello/one-context_5.10.0-1.deb
+        dest: /tmp/one-context_5.10.0-1.deb
 
-    - name: desinstalar could init
-      shell: apt-get purge -y cloud-init
+    - name: Install one context instalar one context
+      shell: dpkg -i /tmp/one-context_*deb || apt-get install -fy
 
-    - name: instalar one context
-      shell: dpkg -i /etc/hello/one-context_*deb || apt-get install -fy 
-     
-    
+    - name: Check if console is enable in Kernel
+      shell: grep GRUB_CMDLINE_LINUX /etc/default/grub | grep -c "console=ttyS0"
+      register: console_status
+      ignore_errors: true
 
+    - name: Enable console in Kernel
+      lineinfile:
+        dest: "/etc/default/grub"
+        regexp: 'GRUB_CMDLINE_LINUX_DEFAULT="(.*)"'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 console=ttyS0,115200"'
+        backrefs: yes
+      when: console_status.stdout == "0"
+
+    - name: Update grub-conf file
+      shell: grub-mkconfig -o /boot/grub/grub.cfg
+      when: console_status.stdout == "0"
+
+    - name: Edit resolvconf interface order
+      replace:
+        path: /etc/resolvconf/interface-order
+        regexp: 'br\|eth'
+        replace: 'br|eth|en'
