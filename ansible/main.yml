@@ -22,7 +22,7 @@
         state: present
         update_cache: yes
 
-    - name: Uninstall cloud-init to prevent conflics with one-context and netplan
+    - name: Uninstall cloud-init and netplan to prevent conflics with one-context
       apt:
         name:
           - netplan
