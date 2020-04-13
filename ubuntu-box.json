@@ -40,10 +40,10 @@
             "passwd/username={{ user `ssh_username` }} ",
             "initrd=/install/initrd.gz -- <enter>"
           ],
-          
+
           "output_directory": "output",
           "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
-          
+
           "ssh_password": "{{ user `ssh_password` }}",
           "ssh_username": "{{ user `ssh_username` }}",
           "ssh_wait_timeout": "1200s"
@@ -67,19 +67,20 @@
         },
         {
           "type": "shell",
-          "execute_command": "{{.Vars}} sudo -S -E bash '{{.Path}}",
+          "execute_command": "{{.Vars}} sudo -S -E bash '{{.Path}}'",
           "environment_vars": [
             "PACKER_VIRT_SYSPREP_DIR={{user `packer_virt_sysprep_dir`}}"
           ],
           "inline": [
-            "mkdir $PACKER_VIRT_SYSPREP_DIR"
+            "mkdir -p ${PACKER_VIRT_SYSPREP_DIR}",
+	    "chmod -R 777 ${PACKER_VIRT_SYSPREP_DIR}"
           ]
         },
         {
           "type": "file",
           "source": "scripts/packer-virt-sysprep/",
           "destination": "{{user `packer_virt_sysprep_dir`}}"
-        },          
+        },
         {
           "type": "shell",
           "remote_folder": "{{user `packer_virt_sysprep_dir`}}",
@@ -98,7 +99,7 @@
             "SYSPREP_OP_TMP_FILES={{user `sysprep_op_tmp_files`}}",
             "SYSPREP_OP_YUM_UUID={{user `sysprep_op_yum_uuid`}}"
           ],
-          "execute_command": "{{ .Vars }} $(command -v bash) '{{.Path }}'",
+          "execute_command": "{{ .Vars }} sudo $(command -v bash) '{{.Path }}'",
           "script": "scripts/99-packer-virt-sysprep-control-script.sh"
         },
         {
@@ -109,7 +110,7 @@
           ],
           "inline": [
             "rm -rf $PACKER_VIRT_SYSPREP_DIR"
-          ]          
+          ]
         },
         {
           "type": "shell",
@@ -153,7 +154,7 @@
       "version": "1",
       "vm_name": "one-ubuntu-base-1804.qcow2",
 
-      "packer_virt_sysprep_dir": "/packer-virt-sysprep",
+      "packer_virt_sysprep_dir": "/tmp/packer-virt-sysprep",
 
       "sysprep_op_bash_history": "true",
       "sysprep_op_crash_data":   "true",
@@ -166,6 +167,7 @@
       "sysprep_op_rpm_db": "false",
       "sysprep_op_ssh_hostkeys": "true",
       "sysprep_op_tmp_files": "true",
-      "sysprep_op_yum_uuid": "false"  
+      "sysprep_op_yum_uuid": "false"
     }
   }
+
