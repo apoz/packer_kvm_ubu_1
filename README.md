@@ -8,3 +8,4 @@ voy a crear desde 0 una plantilla de packer para ubuntu en kvm de manera que est
 
 - todavia no se muy bien como va el preseed.cfg consultar
 
+- se han incluido los scripts de packer-virt-sysprep de https://github.com/DanHam/packer-virt-sysprep
