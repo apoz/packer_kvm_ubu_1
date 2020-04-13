@@ -1,8 +1,8 @@
 #!/bin/bash -eux
 
 # Apt cleanup.
-apt autoremove
-apt update
+DEBIAN_FRONTEND=noninteractive apt autoremove
+DEBIAN_FRONTEND=noninteractive apt update
 
 # Delete unneeded files.
 rm -f /home/sysadmin/*.sh
