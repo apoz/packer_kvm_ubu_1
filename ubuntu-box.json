@@ -67,7 +67,7 @@
         },
         {
           "type": "shell",
-          "execute_command": "echo {{user `ssh_password`}} | {{.Vars}} sudo -S -E bash '{{.Path}}",
+          "execute_command": "{{.Vars}} sudo -S -E bash '{{.Path}}",
           "environment_vars": [
             "PACKER_VIRT_SYSPREP_DIR={{user `packer_virt_sysprep_dir`}}"
           ],
@@ -103,7 +103,7 @@
         },
         {
           "type": "shell",
-          "execute_command": "echo {{user `ssh_password`}} | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+          "execute_command": "{{.Vars}} sudo -S -E bash '{{.Path}}'",
           "environment_vars": [
             "PACKER_VIRT_SYSPREP_DIR={{user `packer_virt_sysprep_dir`}}"
           ],
@@ -113,7 +113,7 @@
         },
         {
           "type": "shell",
-          "execute_command": "echo {{user `ssh_password`}} | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+          "execute_command": "{{.Vars}} sudo -S -E bash '{{.Path}}'",
           "script": "scripts/cleanup.sh"
         }
       ],
